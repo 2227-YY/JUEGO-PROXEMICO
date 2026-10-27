@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¡Proxémica en Acción! - Juego Educativo Interactivo</title>
+  <meta name="description" content="Juego interactivo y divertido sobre la comunicación proxémica, distancias interpersonales y respeto al espacio personal con competencia por equipos y mascota animada con IA.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Fondo con círculos decorativos proxémicos flotantes -->
+  <div class="bg-decorations" aria-hidden="true">
+    <div class="floating-circle circle-intimate" title="Zona Íntima (0-45 cm)"></div>
+    <div class="floating-circle circle-personal" title="Zona Personal (45 cm - 1.2 m)"></div>
+    <div class="floating-circle circle-social" title="Zona Social (1.2 m - 3.6 m)"></div>
+    <div class="floating-circle circle-public" title="Zona Pública (> 3.6 m)"></div>
+    <div class="floating-star star-1">✨</div>
+    <div class="floating-star star-2">🌟</div>
+    <div class="floating-star star-3">⭐</div>
+    <div class="floating-star star-4">✨</div>
+  </div>
+
+  <!-- Contenedor Principal de la Aplicación -->
+  <div class="app-container">
+
+    <!-- BARRA SUPERIOR / MARCADOR PERMANENTE -->
+    <header class="game-header" id="game-header">
+      <div class="brand">
+        <span class="brand-icon">🌐</span>
+        <div class="brand-text">
+          <h1>¡PROXÉMICA EN ACCIÓN!</h1>
+          <span class="brand-subtitle">El Arte del Espacio Personal</span>
+        </div>
+      </div>
+
+      <!-- Marcador de Equipos (visible durante el juego) -->
+      <div class="scoreboard" id="scoreboard" style="display: none;">
+        <!-- Equipo 1 -->
+        <div class="team-card team-1-card" id="team-1-card">
+          <div class="team-badge" id="team-1-badge">⚡</div>
+          <div class="team-info">
+            <span class="team-name" id="display-team-1-name">Equipo Fénix</span>
+            <span class="team-score" id="display-team-1-score">0 pts</span>
+          </div>
+          <div class="turn-indicator" id="team-1-turn-indicator">¡TU TURNO!</div>
+        </div>
+
+        <!-- Información Central de Ronda -->
+        <div class="round-indicator">
+          <div class="round-badge" id="current-round-badge">Ronda 1: Unir Conceptos</div>
+          <div class="round-progress-bar">
+            <div class="round-progress-fill" id="round-progress-fill" style="width: 0%;"></div>
+          </div>
+          <span class="round-counter" id="round-counter">Progreso: 0/6</span>
+        </div>
+
+        <!-- Equipo 2 -->
+        <div class="team-card team-2-card" id="team-2-card">
+          <div class="team-badge" id="team-2-badge">🛡️</div>
+          <div class="team-info">
+            <span class="team-name" id="display-team-2-name">Equipo Titanes</span>
+            <span class="team-score" id="display-team-2-score">0 pts</span>
+          </div>
+          <div class="turn-indicator" id="team-2-turn-indicator">¡TU TURNO!</div>
+        </div>
+      </div>
+
+      <!-- Controles Globales -->
+      <div class="global-controls">
+        <button id="mobile-qr-btn" class="icon-btn" title="Abrir en celular o tablet" aria-label="Abrir en móvil">
+          <span class="icon">📱</span>
+          <span class="btn-text">Jugar en Celular</span>
+        </button>
+        <button id="toggle-voice-btn" class="icon-btn" title="Activar/Desactivar Voz de la Mascota" aria-label="Control de voz">
+          <span class="icon">🔊</span>
+          <span class="btn-text">Voz: ON</span>
+        </button>
+        <button id="rules-btn" class="icon-btn secondary" title="Ver reglas del juego" aria-label="Reglas">
+          <span class="icon">📖</span>
+          <span class="btn-text">Reglas</span>
+        </button>
+        <button id="restart-btn" class="icon-btn danger" title="Reiniciar partida" style="display: none;" aria-label="Reiniciar">
+          <span class="icon">🔄</span>
+          <span class="btn-text">Reiniciar</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ÁREA DE JUEGO PRINCIPAL CON DOS PANELES (ESCENARIO + MASCOTA) -->
+    <main class="main-layout">
+      
+      <!-- SECCIÓN IZQUIERDA: CONTENIDO DE LA ACTIVIDAD -->
+      <section class="game-stage" id="game-stage">
+        
+        <!-- PANTALLA 1: BIENVENIDA Y CONFIGURACIÓN DE EQUIPOS -->
+        <div class="screen screen-setup active" id="setup-screen">
+          <div class="setup-hero">
+            <div class="hero-badge">🎮 Desafío Educativo por Equipos</div>
+            <h2>¡Domina el lenguaje del espacio y compite por la victoria!</h2>
+            <p>Aprende sobre la proxémica, las 4 distancias interpersonales de Edward T. Hall y el valor del respeto al espacio ajeno mientras compites en equipo.</p>
+          </div>
+
+          <div class="setup-grid">
+            <!-- Configuración Equipo 1 -->
+            <div class="setup-card team-setup-1">
+              <div class="setup-card-header">
+                <span class="team-color-dot dot-team-1"></span>
+                <h3>Equipo 1</h3>
+              </div>
+              <div class="form-group">
+                <label for="team-1-input">Nombre del Equipo:</label>
+                <input type="text" id="team-1-input" value="Equipo Fénix" maxlength="20" placeholder="Ej. Fénix, Halcones...">
+              </div>
+              <div class="avatar-selection">
+                <label>Emblema:</label>
+                <div class="avatar-options" id="team-1-avatars">
+                  <button type="button" class="avatar-opt active" data-badge="⚡">⚡</button>
+                  <button type="button" class="avatar-opt" data-badge="🦁">🦁</button>
+                  <button type="button" class="avatar-opt" data-badge="🚀">🚀</button>
+                  <button type="button" class="avatar-opt" data-badge="🔥">🔥</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- VS Badge -->
+            <div class="setup-vs">
+              <span class="vs-circle">VS</span>
+            </div>
+
+            <!-- Configuración Equipo 2 -->
+            <div class="setup-card team-setup-2">
+              <div class="setup-card-header">
+                <span class="team-color-dot dot-team-2"></span>
+                <h3>Equipo 2</h3>
+              </div>
+              <div class="form-group">
+                <label for="team-2-input">Nombre del Equipo:</label>
+                <input type="text" id="team-2-input" value="Equipo Titanes" maxlength="20" placeholder="Ej. Titanes, Linces...">
+              </div>
+              <div class="avatar-selection">
+                <label>Emblema:</label>
+                <div class="avatar-options" id="team-2-avatars">
+                  <button type="button" class="avatar-opt active" data-badge="🛡️">🛡️</button>
+                  <button type="button" class="avatar-opt" data-badge="🐬">🐬</button>
+                  <button type="button" class="avatar-opt" data-badge="🌟">🌟</button>
+                  <button type="button" class="avatar-opt" data-badge="🪐">🪐</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resumen de las Rondas -->
+          <div class="rounds-overview">
+            <div class="overview-item">
+              <span class="overview-num">1</span>
+              <div>
+                <strong>Ronda 1: Unir Tarjetas</strong>
+                <p>Empareja 6 conceptos proxémicos con sus definiciones exactas (+10 pts c/u).</p>
+              </div>
+            </div>
+            <div class="overview-item">
+              <span class="overview-num">2</span>
+              <div>
+                <strong>Ronda 2: Completar Frases</strong>
+                <p>Resuelve retos sobre distancias, cultura y respeto al espacio personal (+15 pts c/u).</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón de Inicio -->
+          <div class="setup-actions">
+            <button id="start-game-btn" class="btn btn-primary pulse-btn">
+              <span>🚀 ¡Comenzar Desafío!</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PANTALLA 2: RONDA 1 - UNIR TARJETAS (MATCHING) -->
+        <div class="screen screen-round" id="round-1-screen" style="display: none;">
+          <div class="round-header-banner">
+            <div class="banner-tag">🎯 Ronda 1 • +10 Puntos por Acierto</div>
+            <h2>Une cada concepto proxémico con su definición correspondiente</h2>
+            <p>Haz clic primero en un concepto de la columna izquierda y luego en su significado en la columna derecha.</p>
+          </div>
+
+          <!-- Tablero de Unión en 2 Columnas -->
+          <div class="matching-arena">
+            <!-- Columna de Conceptos -->
+            <div class="matching-column" id="concepts-column">
+              <div class="column-title">
+                <span class="col-icon">📌</span>
+                <h3>Conceptos Proxémicos</h3>
+              </div>
+              <div class="cards-list" id="concepts-container">
+                <!-- Generado dinámicamente por JS -->
+              </div>
+            </div>
+
+            <!-- Divisor interactivo con línea animada -->
+            <div class="matching-divider">
+              <div class="connector-line"></div>
+              <span class="connector-icon">⇄</span>
+            </div>
+
+            <!-- Columna de Definiciones -->
+            <div class="matching-column" id="definitions-column">
+              <div class="column-title">
+                <span class="col-icon">📖</span>
+                <h3>Definiciones</h3>
+              </div>
+              <div class="cards-list" id="definitions-container">
+                <!-- Generado dinámicamente por JS (desordenado) -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Retroalimentación Dinámica de la Ronda 1 -->
+          <div class="round-feedback" id="round-1-feedback" style="display: none;">
+            <div class="feedback-badge" id="round-1-feedback-badge">✅ ¡Excelente!</div>
+            <p class="feedback-text" id="round-1-feedback-text"></p>
+          </div>
+
+          <!-- Botón para avanzar a la Ronda 2 (aparece al terminar los 6 pares) -->
+          <div class="round-completion-box" id="round-1-complete-box" style="display: none;">
+            <div class="completion-trophy">🎉</div>
+            <h3>¡Ronda 1 completada con éxito!</h3>
+            <p>Ambos equipos han demostrado un gran dominio de los conceptos esenciales.</p>
+            <button id="go-to-round-2-btn" class="btn btn-primary pulse-btn">
+              <span>➡️ Continuar a la Ronda 2: Frases</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PANTALLA 3: RONDA 2 - COMPLETAR FRASES (MULTIPLE CHOICE) -->
+        <div class="screen screen-round" id="round-2-screen" style="display: none;">
+          <div class="round-header-banner">
+            <div class="banner-tag">💡 Ronda 2 • +15 Puntos por Acierto</div>
+            <h2>Completa la frase con la opción proxémica correcta</h2>
+            <p>Analiza la situación cotidiana, las distancias físicas y el contexto cultural antes de responder.</p>
+          </div>
+
+          <div class="question-container" id="question-container">
+            <!-- Cabecera de la Pregunta Actual -->
+            <div class="question-meta">
+              <span class="question-number" id="question-number-badge">Pregunta 1 de 8</span>
+              <span class="question-turn-tag" id="question-turn-tag">Turno de: Equipo Fénix</span>
+            </div>
+
+            <!-- Enunciado de la Frase -->
+            <div class="question-card">
+              <div class="quote-icon">“</div>
+              <p class="question-statement" id="question-statement">
+                Cargando frase...
+              </p>
+            </div>
+
+            <!-- Opciones de Respuesta -->
+            <div class="options-grid" id="options-grid">
+              <!-- Generado dinámicamente por JS -->
+            </div>
+
+            <!-- Explicación Pedagógica Post-Respuesta -->
+            <div class="explanation-box" id="explanation-box" style="display: none;">
+              <div class="explanation-header">
+                <span class="exp-icon" id="explanation-icon">💡</span>
+                <strong id="explanation-title">Explicación Pedagógica:</strong>
+              </div>
+              <p class="explanation-text" id="explanation-text"></p>
+              <div class="explanation-actions">
+                <button id="next-question-btn" class="btn btn-secondary pulse-btn">
+                  <span>Siguiente Frase ➔</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANTALLA 4: RESULTADOS FINALES Y CELEBRACIÓN -->
+        <div class="screen screen-results" id="results-screen" style="display: none;">
+          <!-- Canvas de Confeti para Celebración -->
+          <canvas id="confetti-canvas"></canvas>
+
+          <div class="results-card">
+            <div class="results-trophy-wrap">
+              <div class="results-trophy" id="results-trophy">🏆</div>
+              <div class="trophy-sparkles">✨🌟✨</div>
+            </div>
+
+            <div class="winner-announcement">
+              <span class="winner-tag">¡FIN DEL JUEGO!</span>
+              <h2 id="winner-title">¡Equipo Fénix es el Ganador!</h2>
+              <p id="winner-message">¡Felicidades por su sobresaliente comprensión del espacio personal y la empatía social!</p>
+            </div>
+
+            <!-- Comparativa de Puntos -->
+            <div class="final-scores-grid">
+              <div class="final-score-box" id="final-team-1-box">
+                <div class="final-badge" id="final-team-1-badge">⚡</div>
+                <h4 id="final-team-1-name">Equipo Fénix</h4>
+                <div class="final-points" id="final-team-1-points">0</div>
+                <span class="final-label">Puntos Totales</span>
+              </div>
+
+              <div class="final-vs-divider">VS</div>
+
+              <div class="final-score-box" id="final-team-2-box">
+                <div class="final-badge" id="final-team-2-badge">🛡️</div>
+                <h4 id="final-team-2-name">Equipo Titanes</h4>
+                <div class="final-points" id="final-team-2-points">0</div>
+                <span class="final-label">Puntos Totales</span>
+              </div>
+            </div>
+
+            <!-- Síntesis Pedagógica de lo Aprendido -->
+            <div class="learning-summary">
+              <h3>🎓 Lecciones Clave de la Proxémica que hoy dominan:</h3>
+              <div class="summary-pills">
+                <div class="pill">
+                  <strong>Zona Íntima (0-45 cm):</strong> Afecto, familia y confianza absoluta.
+                </div>
+                <div class="pill">
+                  <strong>Zona Personal (45 cm - 1.2 m):</strong> Amigos y charlas cotidianas.
+                </div>
+                <div class="pill">
+                  <strong>Zona Social (1.2 m - 3.6 m):</strong> Trato profesional y conocidos.
+                </div>
+                <div class="pill">
+                  <strong>Zona Pública (> 3.6 m):</strong> Discursos y exposiciones ante grupos.
+                </div>
+                <div class="pill highlight-pill">
+                  <strong>La Regla de Oro:</strong> El espacio personal se respeta siempre con empatía y consenso.
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de Acción Final -->
+            <div class="results-actions">
+              <button id="rematch-btn" class="btn btn-primary pulse-btn">
+                <span>🔄 Jugar Revancha (Mismos Equipos)</span>
+              </button>
+              <button id="new-game-btn" class="btn btn-outline">
+                <span>👥 Nueva Partida (Nuevos Equipos)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- SECCIÓN DERECHA: MASCOTA INTERACTIVA "PROXI" -->
+      <aside class="pet-sidebar" id="pet-sidebar">
+        <div class="pet-container">
+          
+          <!-- Bocadillo de Diálogo de la Mascota -->
+          <div class="speech-bubble" id="speech-bubble">
+            <div class="bubble-header">
+              <span class="pet-name-tag">🤖 PROXI</span>
+              <button id="repeat-speech-btn" class="bubble-audio-btn" title="Escuchar de nuevo" aria-label="Repetir voz">
+                🔊
+              </button>
+            </div>
+            <p class="bubble-text" id="bubble-text">
+              ¡Hola exploradores! Soy Proxi, su guía espacial en este viaje de comunicación y proxémica. ¿Listos para comenzar?
+            </p>
+            <div class="bubble-tail"></div>
+          </div>
+
+          <!-- Avatar SVG Animado de la Mascota Proxi -->
+          <div class="pet-avatar-wrapper" id="pet-avatar-wrapper">
+            <svg class="proxi-svg" id="proxi-svg" viewBox="0 0 200 220" width="160" height="176" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Gradientes para la mascota -->
+                <linearGradient id="grad-body" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#4facfe" />
+                  <stop offset="100%" stop-color="#00f2fe" />
+                </linearGradient>
+                <linearGradient id="grad-belly" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff" />
+                  <stop offset="100%" stop-color="#e0f2fe" />
+                </linearGradient>
+                <linearGradient id="grad-antenna" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#f6d365" />
+                  <stop offset="100%" stop-color="#fda085" />
+                </linearGradient>
+                <linearGradient id="grad-visor" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#1e293b" />
+                  <stop offset="100%" stop-color="#0f172a" />
+                </linearGradient>
+                <filter id="glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="4" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+
+              <!-- Sombra flotante -->
+              <ellipse class="pet-shadow" cx="100" cy="205" rx="45" ry="8" fill="rgba(15, 23, 42, 0.25)" />
+
+              <!-- Cuerpo Completo con Animación de Flotar -->
+              <g class="pet-body-group" id="pet-body-group">
+                <!-- Orejitas / Sensores laterales -->
+                <rect x="36" y="65" width="14" height="24" rx="7" fill="#38bdf8" />
+                <rect x="150" y="65" width="14" height="24" rx="7" fill="#38bdf8" />
+
+                <!-- Antena con Esfera Brillante -->
+                <line x1="100" y1="45" x2="100" y2="20" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+                <circle class="antenna-orb" cx="100" cy="18" r="9" fill="url(#grad-antenna)" filter="url(#glow-filter)" />
+
+                <!-- Cabeza y Torso de Robot Curvo -->
+                <rect x="45" y="42" width="110" height="95" rx="35" fill="url(#grad-body)" stroke="#ffffff" stroke-width="3" />
+
+                <!-- Visor Digital de Ojos -->
+                <rect x="58" y="58" width="84" height="48" rx="20" fill="url(#grad-visor)" stroke="#38bdf8" stroke-width="2" />
+
+                <!-- Ojos Digitales (Animables) -->
+                <g class="pet-eyes" id="pet-eyes">
+                  <!-- Ojo Izquierdo -->
+                  <circle class="eye-left" cx="80" cy="80" r="10" fill="#38bdf8" filter="url(#glow-filter)" />
+                  <circle class="pupil-left" cx="83" cy="77" r="4" fill="#ffffff" />
+                  <!-- Ojo Derecho -->
+                  <circle class="eye-right" cx="120" cy="80" r="10" fill="#38bdf8" filter="url(#glow-filter)" />
+                  <circle class="pupil-right" cx="123" cy="77" r="4" fill="#ffffff" />
+                </g>
+
+                <!-- Boca Digital (se anima al hablar) -->
+                <path class="pet-mouth" id="pet-mouth" d="M 88 95 Q 100 102 112 95" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" fill="none" />
+
+                <!-- Torso Inferior / Pecho -->
+                <rect x="62" y="130" width="76" height="50" rx="20" fill="url(#grad-body)" stroke="#ffffff" stroke-width="2.5" />
+                <rect x="74" y="138" width="52" height="34" rx="14" fill="url(#grad-belly)" />
+
+                <!-- Emblema de radar proxémico en el pecho -->
+                <circle cx="100" cy="155" r="4" fill="#0284c7" />
+                <circle cx="100" cy="155" r="9" fill="none" stroke="#0284c7" stroke-width="1.5" stroke-dasharray="3,2" />
+
+                <!-- Manos flotantes -->
+                <ellipse class="hand-left" cx="48" cy="148" rx="10" ry="12" fill="#38bdf8" stroke="#ffffff" stroke-width="2" />
+                <ellipse class="hand-right" cx="152" cy="148" rx="10" ry="12" fill="#38bdf8" stroke="#ffffff" stroke-width="2" />
+              </g>
+            </svg>
+          </div>
+
+          <!-- Panel de Asistencia Inteligente de la Mascota -->
+          <div class="pet-actions-card">
+            <button id="ask-hint-btn" class="btn btn-hint" title="Pedir una pista a Proxi">
+              <span class="hint-icon">💡</span>
+              <span class="hint-text">Pedir pista a Proxi</span>
+            </button>
+            <div class="ai-status-indicator" id="ai-status-indicator">
+              <span class="ai-dot active"></span>
+              <span class="ai-text" id="ai-status-text">Asistencia Inteligente Lista</span>
+            </div>
+          </div>
+
+          <!-- Medidor de Distancias Proxémicas Rápido -->
+          <div class="distance-guide-card">
+            <h4>📏 Guía Rápida de Distancias:</h4>
+            <ul class="mini-guide">
+              <li><span class="zone-badge badge-intimate">Íntima</span> 0 - 45 cm</li>
+              <li><span class="zone-badge badge-personal">Personal</span> 45 cm - 1.2 m</li>
+              <li><span class="zone-badge badge-social">Social</span> 1.2 m - 3.6 m</li>
+              <li><span class="zone-badge badge-public">Pública</span> + 3.6 m</li>
+            </ul>
+          </div>
+
+        </div>
+      </aside>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL: CÓDIGO QR Y ENLACE PARA JUGAR EN EL CELULAR -->
+  <div class="modal-overlay" id="mobile-modal" style="display: none;">
+    <div class="modal-card mobile-modal-card">
+      <div class="modal-header">
+        <h3>📱 Jugar en el Celular o Tableta</h3>
+        <button class="close-modal-btn" id="close-mobile-btn" aria-label="Cerrar modal">✕</button>
+      </div>
+      <div class="modal-body mobile-modal-body">
+        <p class="mobile-instruction">
+          Escanea el código QR con la <strong>cámara de tu celular</strong> o abre <strong>Google Chrome</strong> y escribe el enlace:
+        </p>
+
+        <!-- Contenedor del Código QR -->
+        <div class="qr-code-wrapper">
+          <img id="qr-code-img" src="" alt="Código QR para conectar al juego desde el móvil" width="180" height="180">
+          <span class="qr-label">Apunta con la cámara de tu móvil</span>
+        </div>
+
+        <!-- Enlace Copiable -->
+        <div class="link-copy-box">
+          <input type="text" id="mobile-url-input" readonly value="http://192.168.40.175:3000">
+          <button id="copy-url-btn" class="btn btn-secondary btn-sm" title="Copiar enlace">
+            <span>📋 Copiar</span>
+          </button>
+        </div>
+        <span id="copy-status-text" class="copy-status"></span>
+
+        <div class="mobile-tips-box">
+          <strong>💡 Requisito para conectar:</strong>
+          <span>Tu celular debe estar conectado a la misma red Wi-Fi de tu casa o lugar de estudio que este computador.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="got-mobile-btn">¡Listo, entendido!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REGLAS DEL JUEGO -->
+  <div class="modal-overlay" id="rules-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📖 Reglas de ¡Proxémica en Acción!</h3>
+        <button class="close-modal-btn" id="close-rules-btn" aria-label="Cerrar modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="rule-section">
+          <h4>🎯 Objetivo</h4>
+          <p>Aprender sobre la comunicación no verbal y el uso del espacio físico entre personas mediante retos dinámicos y divertidos por equipos.</p>
+        </div>
+        <div class="rule-section">
+          <h4>👥 Turnos y Puntuación</h4>
+          <ul>
+            <li><strong>Ronda 1 (Unir Conceptos):</strong> Cada acierto correcto suma <strong>10 puntos</strong> al equipo activo. Si fallas, el turno pasa al otro equipo para intentar acertar.</li>
+            <li><strong>Ronda 2 (Completar Frases):</strong> Cada respuesta correcta suma <strong>15 puntos</strong>. El turno se alterna en cada pregunta.</li>
+          </ul>
+        </div>
+        <div class="rule-section">
+          <h4>🤖 Pistas de Proxi</h4>
+          <p>Si tu equipo tiene dudas, presiona el botón <strong>"Pedir pista a Proxi"</strong>. Nuestra mascota utilizará la potencia de Google Gemini (o pistas pedagógicas expertas) para guiarte sin darte la respuesta directa.</p>
+        </div>
+        <div class="rule-section">
+          <h4>🏆 Ganador</h4>
+          <p>Al terminar ambas rondas, el equipo con más puntos se llevará el Trofeo de Campeón Proxémico. En caso de igualdad de puntos, ¡se declarará un honroso empate!</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="got-rules-btn">¡Entendido, a jugar!</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
